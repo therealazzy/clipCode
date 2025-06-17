@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import useLocalStorage from "./hooks/useLocalStorage";
 import SnippetForm from "./components/snippetForm";
 import SnippetCard from "./components/snippetCard";
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   const [snippets, setSnippets] = useLocalStorage("snippets", []);
@@ -51,6 +52,7 @@ function App() {
           ))
         )}
       </div>
+      <Analytics />
     </div>
   );
 }
