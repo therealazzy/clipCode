@@ -35,12 +35,14 @@ export default function SnippetForm({ onAdd }) {
         placeholder="Tags (comma separated)"
         className="w-full p-2 border rounded mb-2 bg-white dark:bg-gray-800 border-slate-200 dark:border-gray-700 text-slate-900 dark:text-gray-100 placeholder-slate-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-colors duration-200"
       />
-      <button
-        type="submit"
-        className="bg-indigo-700 dark:bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-800 dark:hover:bg-indigo-600 transition-colors duration-200"
-      >
-        Add Snippet
-      </button>
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          className="bg-indigo-700 dark:bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-800 dark:hover:bg-indigo-600 transition-colors duration-200"
+        >
+          Add Snippet
+        </button>
+      </div>
     </form>
   );
 }
