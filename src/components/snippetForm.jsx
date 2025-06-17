@@ -25,7 +25,7 @@ export default function SnippetForm({ onAdd }) {
         value={code}
         onChange={(e) => setCode(e.target.value)}
         placeholder="Paste your code snippet here..."
-        className="w-full p-2 border rounded mb-2 font-mono bg-white dark:bg-gray-800 border-slate-200 dark:border-gray-700 text-slate-900 dark:text-gray-100 placeholder-slate-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-colors duration-200"
+        className="w-full p-2 border rounded mb-2 font-mono bg-white dark:bg-gray-800 border-slate-200 dark:border-gray-700 text-slate-900 dark:text-gray-100 placeholder-slate-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-colors duration-200 max-h-[300px] overflow-y-auto resize-y"
         rows={6}
       />
       <input
