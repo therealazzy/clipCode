@@ -6,7 +6,7 @@ function highlightMatch(text, query) {
   const parts = text.split(new RegExp(`(${query})`, "gi"));
   return parts.map((part, index) =>
     part.toLowerCase() === query.toLowerCase() ? (
-      <mark key={index} className="bg-yellow-200 dark:bg-yellow-800 px-1 rounded">
+      <mark key={index} className="bg-amber-100 dark:bg-yellow-800 px-1 rounded">
         {part}
       </mark>
     ) : (
@@ -17,8 +17,8 @@ function highlightMatch(text, query) {
 
 export default function SnippetCard({ snippet, searchQuery, onDelete }) {
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700 transition-colors duration-200">
-      <pre className="font-mono text-sm whitespace-pre-wrap overflow-x-auto max-h-48 text-gray-900 dark:text-gray-100">
+    <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 mb-4 border border-slate-200 dark:border-gray-700 transition-colors duration-200">
+      <pre className="font-mono text-sm whitespace-pre-wrap overflow-x-auto max-h-48 text-slate-900 dark:text-gray-100">
         {highlightMatch(snippet.code, searchQuery)}
       </pre>
 
@@ -26,7 +26,7 @@ export default function SnippetCard({ snippet, searchQuery, onDelete }) {
         {snippet.tags.map((tag) => (
           <span
             key={tag}
-            className="bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-300 px-2 py-1 rounded text-xs font-semibold transition-colors duration-200"
+            className="bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 px-2 py-1 rounded text-xs font-semibold transition-colors duration-200"
           >
             {highlightMatch(tag, searchQuery)}
           </span>
@@ -35,7 +35,7 @@ export default function SnippetCard({ snippet, searchQuery, onDelete }) {
 
       <button
         onClick={() => onDelete(snippet.id)}
-        className="mt-3 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 font-semibold text-sm transition-colors duration-200"
+        className="mt-3 text-red-700 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 font-semibold text-sm transition-colors duration-200"
       >
         Delete
       </button>
