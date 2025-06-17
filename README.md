@@ -10,7 +10,6 @@ Built with React, Tailwind CSS, and localStorage.
 - 🏷️ Tag each snippet with custom keywords
 - 🔍 Search by tag or code content (with highlight)
 - 💾 All data stored locally in your browser
-- 🌙 Dark mode–ready (just add toggle)
 
 ## 🛠 Tech Stack
 
