@@ -3,16 +3,25 @@ import React, { useState } from "react";
 function highlightMatch(text, query) {
   if (!query) return text;
 
-  const parts = text.split(new RegExp(`(${query})`, "gi"));
-  return parts.map((part, index) =>
-    part.toLowerCase() === query.toLowerCase() ? (
-      <mark key={index} className="bg-amber-100 dark:bg-yellow-800 px-1 rounded">
-        {part}
-      </mark>
-    ) : (
-      part
-    )
-  );
+  // Escape special characters in the query
+  const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  
+  try {
+    const parts = text.split(new RegExp(`(${escapedQuery})`, "gi"));
+    return parts.map((part, index) =>
+      part.toLowerCase() === query.toLowerCase() ? (
+        <mark key={index} className="bg-amber-100 dark:bg-yellow-800 px-1 rounded">
+          {part}
+        </mark>
+      ) : (
+        part
+      )
+    );
+  } catch (error) {
+    // If there's any error in the regex, just return the original text
+    console.error('Error in highlightMatch:', error);
+    return text;
+  }
 }
 
 export default function SnippetCard({ snippet, searchQuery, onDelete }) {
