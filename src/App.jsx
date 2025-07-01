@@ -19,8 +19,8 @@ function App() {
   const filteredSnippets = snippets.filter((snippet) => {
     const query = searchQuery.toLowerCase();
     return (
-      snippet.code.toLowerCase().includes(query) ||
-      snippet.tags.some((tag) => tag.toLowerCase().includes(query))
+      snippet.tags.some((tag) => tag.toLowerCase().includes(query)) ||
+      (snippet.language && snippet.language.toLowerCase().includes(query))
     );
   });
 
@@ -33,7 +33,7 @@ function App() {
 
         <input
           type="text"
-          placeholder="Search by tag or code..."
+          placeholder="Search by tag"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full p-2 mb-6 border rounded bg-white dark:bg-gray-800 border-slate-200 dark:border-gray-700 text-slate-900 dark:text-gray-100 placeholder-slate-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-colors duration-200"
