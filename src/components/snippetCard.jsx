@@ -35,6 +35,19 @@ export default function SnippetCard({ snippet, searchQuery, onDelete }) {
 
   return (
     <div className="relative bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 mb-4 border border-slate-200 dark:border-gray-700 transition-colors duration-200 group">
+      {/* Summary and Language */}
+      {snippet.summary && (
+        <div className="mb-2">
+          <div className="text-sm text-slate-700 dark:text-gray-300 font-semibold">Summary:</div>
+          <div className="text-sm text-slate-600 dark:text-gray-400 mb-1">{snippet.summary}</div>
+        </div>
+      )}
+      {snippet.language && (
+        <div className="mb-2">
+          <span className="inline-block bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-1 rounded text-xs font-semibold">{snippet.language}</span>
+        </div>
+      )}
+      {/* Code */}
       <div className="relative">
         <pre className="font-mono text-sm whitespace-pre-wrap overflow-x-auto max-h-48 text-slate-900 dark:text-gray-100">
           {highlightMatch(snippet.code, searchQuery)}
