@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 function highlightMatch(text, query) {
   if (!query) return text;
@@ -22,6 +24,14 @@ function highlightMatch(text, query) {
     console.error('Error in highlightMatch:', error);
     return text;
   }
+}
+
+// Helper to normalize language names for syntax highlighter
+function getSyntaxLanguage(lang) {
+  if (!lang) return 'text';
+  const normalized = lang.trim().toLowerCase();
+  if (normalized === 'c++') return 'cpp';
+  return normalized;
 }
 
 export default function SnippetCard({ snippet, searchQuery, onDelete }) {
@@ -49,9 +59,14 @@ export default function SnippetCard({ snippet, searchQuery, onDelete }) {
       )}
       {/* Code */}
       <div className="relative">
-        <pre className="font-mono text-sm whitespace-pre-wrap overflow-x-auto max-h-48 text-slate-900 dark:text-gray-100">
-          {highlightMatch(snippet.code, searchQuery)}
-        </pre>
+        <SyntaxHighlighter
+          language={getSyntaxLanguage(snippet.language)}
+          style={oneDark}
+          customStyle={{ margin: 0, borderRadius: '0.375rem', fontSize: '0.875rem', maxHeight: '12rem', overflowX: 'auto' }}
+          wrapLongLines={true}
+        >
+          {searchQuery ? highlightMatch(snippet.code, searchQuery) : snippet.code}
+        </SyntaxHighlighter>
         <button
           onClick={copyToClipboard}
           className="absolute top-2 right-2 px-2 py-1 text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-indigo-200 dark:hover:bg-indigo-800"
