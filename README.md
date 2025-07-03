@@ -1,6 +1,6 @@
 # SnipCode ✂️💡
 
-A clean, fast, and modern code snippet manager for developers. Add, search, and manage your favorite snippets — all stored locally in your browser.
+A clean, fast, and modern code snippet manager for developers. Add, search, and manage your favorite snippets all stored locally in your browser.
 
 Built with React, Tailwind CSS, and localStorage.
 
