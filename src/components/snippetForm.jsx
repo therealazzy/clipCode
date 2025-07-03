@@ -1,3 +1,4 @@
+// SnippetForm: Form for adding or generating code snippets with tags and summary
 import React, { useState } from "react";
 import { getCodeSummaryAndLanguage, getCodeFromPrompt } from '../api/ai';
 
@@ -9,7 +10,7 @@ export default function SnippetForm({ onAdd }) {
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
 
-  // Same forbidden patterns as backend
+  // Patterns to prevent prompt injection
   const forbiddenPatterns = [
     /<\/?(script|iframe|object|embed|form|img|svg|link|style)[^>]*>/i,
     /system\s*:/i,
@@ -19,6 +20,7 @@ export default function SnippetForm({ onAdd }) {
     /[`$]/,
   ];
 
+  // Returns error string if prompt is invalid
   const validatePrompt = (prompt) => {
     for (const pattern of forbiddenPatterns) {
       if (pattern.test(prompt)) {
@@ -28,6 +30,7 @@ export default function SnippetForm({ onAdd }) {
     return "";
   };
 
+  // Handle code generation from prompt and auto-submit as snippet
   const handleGenerateCode = async (e) => {
     e.preventDefault();
     setPromptError("");
@@ -39,21 +42,23 @@ export default function SnippetForm({ onAdd }) {
     setGenerating(true);
     try {
       const generated = await getCodeFromPrompt(prompt);
-      // Fetch summary and language for generated code
       setLoading(true);
       try {
         const aiResult = await getCodeSummaryAndLanguage(generated);
-        // Use language as a tag, and try to extract up to 4 keywords from summary
+        // Use language and up to 4 keywords from summary as tags
         let autoTags = aiResult.language ? [aiResult.language] : [];
         if (aiResult.summary) {
-          // Extract keywords: split summary by non-word chars, filter out short/common words, take up to 4
+          // Extract up to 4 keywords from summary for tags
+          const stopwords = [
+            "the","and","for","with","that","this","from","are","but","can","has","have","was","will","not","you","all","any","use","one","two","out","get","set","let","var","new","now","how","why","who","its","his","her","she","him","our","their","they","them","which","when","where","what","does","did","had","been","more","than","just","like","into","also","each","other","some","such","only","very","may","should","could","would","about","over","after","before","then","these","those","while","because","between","under","above","upon","again","against","during","without","within","upon","using","used"
+          ];
           const keywords = aiResult.summary
             .split(/\W+/)
             .map(w => w.trim().toLowerCase())
-            .filter(w => w.length > 2 && !["the","and","for","with","that","this","from","are","but","can","has","have","was","will","not","you","all","any","use","one","two","out","get","set","let","var","new","now","how","why","who","its","his","her","she","him","our","their","they","them","which","when","where","what","does","did","had","been","more","than","just","like","into","also","each","other","some","such","only","very","may","should","could","would","about","over","after","before","then","these","those","while","because","between","under","above","upon","again","against","during","without","within","upon","using","used","using","using","using"].includes(w));
+            .filter(w => w.length > 2 && !stopwords.includes(w));
           autoTags = [...new Set([...autoTags, ...keywords.slice(0, 4)])];
         }
-        // Compose new snippet and submit
+        // Add the new snippet to the list
         const newSnippet = {
           id: Date.now().toString(),
           code: generated.trim(),
@@ -75,6 +80,7 @@ export default function SnippetForm({ onAdd }) {
     setGenerating(false);
   };
 
+  // Handle manual snippet submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!code.trim()) return;
@@ -106,7 +112,7 @@ export default function SnippetForm({ onAdd }) {
   return (
     <form onSubmit={handleSubmit} className="mb-6">
       <div className="flex flex-col md:flex-row gap-2 items-stretch">
-        {/* Prompt box */}
+        {/* Prompt input and generate button */}
         <div className="md:w-1/3 w-full flex flex-col">
           <textarea
             value={prompt}

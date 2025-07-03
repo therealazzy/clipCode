@@ -1,5 +1,7 @@
+// ai.jsx: API functions for interacting with HuggingFace inference for code tasks
 import { HfInference } from '@huggingface/inference'
 
+// Prompts for different AI tasks
 const SYSTEM_PROMPT = `
 You are an expert code assistant. Given a code snippet, provide a short, clear summary (1-2 sentences) of what the code does. Also, identify the programming language of the snippet. Respond in the following JSON format:
 {"summary": "<short summary>", "language": "<language>"}`
@@ -15,6 +17,7 @@ You are an expert developer. Given a prompt describing a coding task, generate a
 
 const hf = new HfInference(import.meta.env.VITE_HF_ACCESS_TOKEN)
 
+// Get summary and language for a code snippet
 export async function getCodeSummaryAndLanguage(codeSnippet) {
     try {
         const response = await hf.chatCompletion({
@@ -34,6 +37,7 @@ export async function getCodeSummaryAndLanguage(codeSnippet) {
     }
 }
 
+// Get optimized version of a code snippet
 export async function getOptimizedCode(codeSnippet) {
     try {
         const response = await hf.chatCompletion({
@@ -51,14 +55,14 @@ export async function getOptimizedCode(codeSnippet) {
     }
 }
 
+// Translate code to a target language
 export async function getTranslatedCode(codeSnippet, targetLanguage) {
     try {
         const response = await hf.chatCompletion({
             model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
             messages: [
                 { role: "system", content: TRANSLATE_PROMPT },
-                { role: "user", content: `Translate this code to ${targetLanguage}:
-${codeSnippet}` },
+                { role: "user", content: `Translate this code to ${targetLanguage}:\n${codeSnippet}` },
             ],
             max_tokens: 1024,
         })
@@ -69,8 +73,9 @@ ${codeSnippet}` },
     }
 }
 
+// Generate code from a prompt, with basic prompt injection prevention
 export async function getCodeFromPrompt(prompt) {
-    // Basic prompt injection prevention: reject prompts with suspicious tokens
+    // Block suspicious or dangerous prompt content
     const forbiddenPatterns = [
         /<\/?(script|iframe|object|embed|form|img|svg|link|style)[^>]*>/i, // HTML/script tags
         /system\s*:/i, // system prompt injection
