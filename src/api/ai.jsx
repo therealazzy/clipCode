@@ -10,6 +10,9 @@ You are an expert code optimizer. Given a code snippet, return an improved and o
 const TRANSLATE_PROMPT = `
 You are an expert code translator. Given a code snippet and a target programming language, translate the code to the target language, preserving the algorithm and logic. Only return the translated code, do not include any explanation or comments.`
 
+const GENERATE_CODE_PROMPT = `
+You are an expert developer. Given a prompt describing a coding task, generate a code snippet that fulfills the prompt. Only return the code, do not include any explanation, comments, or markdown formatting.`
+
 const hf = new HfInference(import.meta.env.VITE_HF_ACCESS_TOKEN)
 
 export async function getCodeSummaryAndLanguage(codeSnippet) {
@@ -63,5 +66,36 @@ ${codeSnippet}` },
     } catch (err) {
         console.error(err.message)
         return "Could not translate code."
+    }
+}
+
+export async function getCodeFromPrompt(prompt) {
+    // Basic prompt injection prevention: reject prompts with suspicious tokens
+    const forbiddenPatterns = [
+        /<\/?(script|iframe|object|embed|form|img|svg|link|style)[^>]*>/i, // HTML/script tags
+        /system\s*:/i, // system prompt injection
+        /role\s*:/i, // role prompt injection
+        /openai\s*:/i, // openai prompt injection
+        /\b(import|require|process|child_process|fs|eval|Function|window|document)\b/i, // dangerous JS
+        /[`$]/, // backticks or $ (template injection)
+    ];
+    for (const pattern of forbiddenPatterns) {
+        if (pattern.test(prompt)) {
+            throw new Error("Prompt contains forbidden or potentially dangerous content.");
+        }
+    }
+    try {
+        const response = await hf.chatCompletion({
+            model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+            messages: [
+                { role: "system", content: GENERATE_CODE_PROMPT },
+                { role: "user", content: prompt },
+            ],
+            max_tokens: 1024,
+        });
+        return response.choices[0].message.content;
+    } catch (err) {
+        console.error(err.message);
+        return "Could not generate code.";
     }
 }
