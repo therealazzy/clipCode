@@ -125,7 +125,7 @@ export default function SnippetForm({ onAdd }) {
           <button
             type="button"
             onClick={handleGenerateCode}
-            className="bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 px-2 py-1 rounded hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-colors duration-200 text-sm mt-1"
+            className="bg-green-700 dark:bg-green-500 text-white px-4 py-2 rounded hover:bg-green-800 dark:hover:bg-green-600 transition-colors duration-200 mt-1 text-sm"
             disabled={loading || generating || !prompt.trim()}
           >
             {generating ? "Generating..." : "Generate Code"}
