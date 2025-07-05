@@ -30,6 +30,24 @@ export default function SnippetForm({ onAdd }) {
     return "";
   };
 
+  // Utility to strip markdown code fences and leading explanation from AI output
+  function extractPureCode(aiOutput) {
+    // Remove everything before the first code fence if present
+    const codeFenceMatch = aiOutput.match(/```[a-zA-Z]*\n([\s\S]*?)```/);
+    if (codeFenceMatch) {
+      return codeFenceMatch[1].trim();
+    }
+    // Remove triple backticks and language if present at start
+    let code = aiOutput.replace(/^```[a-zA-Z]*\n?/, '').replace(/```$/, '').trim();
+    // If the result still contains explanation (e.g., lines before 'using' or 'class'), try to extract code block heuristically
+    const lines = code.split('\n');
+    const firstCodeLine = lines.findIndex(line => /^(using |class |public |private |static |def |function |#include |import )/i.test(line));
+    if (firstCodeLine > 0) {
+      code = lines.slice(firstCodeLine).join('\n').trim();
+    }
+    return code;
+  }
+
   // Handle code generation from prompt and auto-submit as snippet
   const handleGenerateCode = async (e) => {
     e.preventDefault();
@@ -42,9 +60,10 @@ export default function SnippetForm({ onAdd }) {
     setGenerating(true);
     try {
       const generated = await getCodeFromPrompt(prompt);
+      const pureCode = extractPureCode(generated);
       setLoading(true);
       try {
-        const aiResult = await getCodeSummaryAndLanguage(generated);
+        const aiResult = await getCodeSummaryAndLanguage(pureCode);
         // Use language and up to 4 keywords from summary as tags
         let autoTags = aiResult.language ? [aiResult.language] : [];
         if (aiResult.summary) {
@@ -61,7 +80,7 @@ export default function SnippetForm({ onAdd }) {
         // Add the new snippet to the list
         const newSnippet = {
           id: Date.now().toString(),
-          code: generated.trim(),
+          code: pureCode,
           tags: autoTags,
           summary: aiResult.summary || '',
           language: aiResult.language || '',
@@ -121,6 +140,14 @@ export default function SnippetForm({ onAdd }) {
             className="p-2 border rounded mb-1 bg-white dark:bg-gray-800 border-slate-200 dark:border-gray-700 text-slate-900 dark:text-gray-100 placeholder-slate-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-colors duration-200 min-h-[100px] max-h-[300px] resize-y"
             rows={6}
             disabled={loading || generating}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (!loading && !generating && prompt.trim()) {
+                  handleGenerateCode(e);
+                }
+              }
+            }}
           />
           <button
             type="button"

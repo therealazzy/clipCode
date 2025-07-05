@@ -13,7 +13,7 @@ const TRANSLATE_PROMPT = `
 You are an expert code translator. Given a code snippet and a target programming language, translate the code to the target language, preserving the algorithm and logic. Only return the translated code, do not include any explanation or comments.`
 
 const GENERATE_CODE_PROMPT = `
-You are an expert developer. Given a prompt describing a coding task, generate a code snippet that fulfills the prompt. Only return the code, do not include any explanation, comments, or markdown formatting.`
+You are an expert developer. Given a prompt describing a coding task, generate a code snippet that fulfills the prompt. Remember that it is important to only return the code, do not include any explanation, comments, or markdown formatting.`
 
 const hf = new HfInference(import.meta.env.VITE_HF_ACCESS_TOKEN)
 
@@ -81,11 +81,12 @@ export async function getCodeFromPrompt(prompt) {
         /system\s*:/i, // system prompt injection
         /role\s*:/i, // role prompt injection
         /openai\s*:/i, // openai prompt injection
-        /\b(import|require|process|child_process|fs|eval|Function|window|document)\b/i, // dangerous JS
-        /[`$]/, // backticks or $ (template injection)
+        /\b(import|require|process|child_process|fs|eval|Function\(|window|document)\b/, // dangerous JS (case sensitive, Function only if used as constructor)
     ];
     for (const pattern of forbiddenPatterns) {
         if (pattern.test(prompt)) {
+            console.log('Prompt blocked:', prompt);
+            console.log('Blocked by pattern:', pattern);
             throw new Error("Prompt contains forbidden or potentially dangerous content.");
         }
     }
