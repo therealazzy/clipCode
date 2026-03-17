@@ -32,6 +32,7 @@ function getSyntaxLanguage(lang) {
   if (!lang) return 'text';
   const normalized = lang.trim().toLowerCase();
   if (normalized === 'c++') return 'cpp';
+  if (normalized === 'c#' || normalized === 'csharp' || normalized === 'c-sharp') return 'csharp';
   return normalized;
 }
 
