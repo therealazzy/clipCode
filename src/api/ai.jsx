@@ -1,5 +1,4 @@
 // ai.jsx: API functions for interacting with HuggingFace inference for code tasks
-import { HfInference } from '@huggingface/inference'
 
 // Prompts for different AI tasks
 const SYSTEM_PROMPT = `
@@ -15,13 +14,36 @@ You are an expert code translator. Given a code snippet and a target programming
 const GENERATE_CODE_PROMPT = `
 You are an expert developer. Given a prompt describing a coding task, generate a code snippet that fulfills the prompt. Only return the code, do not include any explanation, comments, or markdown formatting.`
 
-const hf = new HfInference(import.meta.env.VITE_HF_ACCESS_TOKEN)
+const HF_MODEL = "mistralai/Mixtral-8x7B-Instruct-v0.1"
+
+async function chatCompletion({ messages, max_tokens }) {
+    const res = await fetch('/api/hf-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            model: HF_MODEL,
+            messages,
+            max_tokens,
+        }),
+    })
+
+    if (!res.ok) {
+        let details = ''
+        try {
+            details = await res.text()
+        } catch {
+            // ignore
+        }
+        throw new Error(`AI request failed (${res.status}): ${details || res.statusText}`)
+    }
+
+    return res.json()
+}
 
 // Get summary and language for a code snippet
 export async function getCodeSummaryAndLanguage(codeSnippet) {
     try {
-        const response = await hf.chatCompletion({
-            model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+        const response = await chatCompletion({
             messages: [
                 { role: "system", content: SYSTEM_PROMPT },
                 { role: "user", content: `Here is the code snippet:\n${codeSnippet}` },
@@ -40,8 +62,7 @@ export async function getCodeSummaryAndLanguage(codeSnippet) {
 // Get optimized version of a code snippet
 export async function getOptimizedCode(codeSnippet) {
     try {
-        const response = await hf.chatCompletion({
-            model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+        const response = await chatCompletion({
             messages: [
                 { role: "system", content: OPTIMIZE_PROMPT },
                 { role: "user", content: `Optimize this code:\n${codeSnippet}` },
@@ -58,8 +79,7 @@ export async function getOptimizedCode(codeSnippet) {
 // Translate code to a target language
 export async function getTranslatedCode(codeSnippet, targetLanguage) {
     try {
-        const response = await hf.chatCompletion({
-            model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+        const response = await chatCompletion({
             messages: [
                 { role: "system", content: TRANSLATE_PROMPT },
                 { role: "user", content: `Translate this code to ${targetLanguage}:\n${codeSnippet}` },
@@ -90,8 +110,7 @@ export async function getCodeFromPrompt(prompt) {
         }
     }
     try {
-        const response = await hf.chatCompletion({
-            model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+        const response = await chatCompletion({
             messages: [
                 { role: "system", content: GENERATE_CODE_PROMPT },
                 { role: "user", content: prompt },
