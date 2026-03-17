@@ -1,4 +1,5 @@
-const HF_CHAT_COMPLETIONS_URL = 'https://api-inference.huggingface.co/v1/chat/completions'
+const HF_CHAT_COMPLETIONS_URL =
+  'https://api-inference.huggingface.co/v1/chat/completions'
 
 function readJson(req) {
   return new Promise((resolve, reject) => {
@@ -10,7 +11,7 @@ function readJson(req) {
       if (!body) return resolve({})
       try {
         resolve(JSON.parse(body))
-      } catch (e) {
+      } catch {
         reject(new Error('Invalid JSON body'))
       }
     })
@@ -18,7 +19,7 @@ function readJson(req) {
   })
 }
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.statusCode = 405
     res.setHeader('Allow', 'POST')
@@ -46,7 +47,7 @@ module.exports = async (req, res) => {
   } catch (e) {
     res.statusCode = 400
     res.setHeader('Content-Type', 'application/json')
-    res.end(JSON.stringify({ error: e.message || 'Invalid request body' }))
+    res.end(JSON.stringify({ error: e?.message || 'Invalid request body' }))
     return
   }
 
@@ -75,7 +76,7 @@ module.exports = async (req, res) => {
     res.statusCode = hfRes.status
     res.setHeader('Content-Type', 'application/json')
     res.end(text)
-  } catch (e) {
+  } catch {
     res.statusCode = 502
     res.setHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({ error: 'Upstream request failed' }))

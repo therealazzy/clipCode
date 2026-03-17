@@ -22,7 +22,7 @@ All AI features are powered by HuggingFace Inference API and are securely access
 
 ## 🔒 Secure AI Integration
 
-To keep your HuggingFace API key safe, the app uses a Vercel Serverless Function (`/api/hf-chat`) as a proxy. The frontend calls this endpoint, and the serverless function attaches the HuggingFace token from a **server-only** environment variable (`HF_ACCESS_TOKEN`). The browser never receives the token.
+To keep your HuggingFace API key safe, the app uses a Vercel Serverless Function (`api/hf-chat.js`, served at `/api/hf-chat`) as a proxy. The frontend calls this endpoint, and the serverless function attaches the HuggingFace token from a **server-only** environment variable (`HF_ACCESS_TOKEN`). The browser never receives the token.
 
 - **Vercel env var**: set `HF_ACCESS_TOKEN` (do **not** use `VITE_*` for secrets)
 - **Frontend**: calls `POST /api/hf-chat` (same origin)
